@@ -55,14 +55,32 @@ function notify(event) {
    * Increment until an email is found without a corresponding UNLOAD_SCHEDULED date.
    */
   Logger.log("notify");
-  var lastRow = event.range.getSheet().getLastRow();
-  for (row = event.range.getRow() + 1; row <= lastRow; row++) {
-    var email = event.range.getSheet().getRange(row, getColumnByName(event.range, EMAIL)).getValue();
-    var unloadScheduled = event.range.getSheet().getRange(row, getColumnByName(event.range, UNLOAD_SCHEDULED)).getValue();
-    if (email != "" && unloadScheduled == "") {
-      Logger.log("sending email to " + email);
-      // TODO send email
-      break
+  var sampleIdCol = getColumnByName(event.range, SAMPLE_ID);
+  var emailCol = getColumnByName(event.range, EMAIL);
+  var unloadScheduledCol = getColumnByName(event.range, UNLOAD_SCHEDULED);
+  
+  var sheet = event.range.getSheet();
+  var currentRow = event.range.getRow();
+  var currentUser = sheet.getRange(currentRow, emailCol).getValue();
+  var unloadTime = sheet.getRange(currentRow, unloadScheduledCol).getValue();
+  
+  var lastRow = sheet.getLastRow();
+  for (row = currentRow + 1; row <= lastRow; row++) {
+    var nextUser = sheet.getRange(row, emailCol).getValue();
+    var nextUnloadTime = sheet.getRange(row, unloadScheduledCol).getValue();
+    var nextSample = sheet.getRange(row, sampleIdCol).getValue();
+    var sheetName = sheet.getName();
+    if (nextUser != "" && nextUnloadTime == "") {
+      Logger.log("sending email to row" + row);
+      subject = `[fridge-queue/${sheetName}] ${currentUser} is scheduled to unload at ${unloadTime}`;
+      body = `You're next in the ${sheetName} queue to load ${nextSample}.\n`
+        + `Coordinate the exact time with ${currentUser}.\n\n`
+        + `${sheet.getParent().getUrl()}\n\n`
+        + `This is an automated message.`;
+      
+      Logger.log("sending email to " + nextUser + "///" + subject + "///" + body);
+      MailApp.sendEmail(nextUser, subject, body, {noReply: true})
+      break;
     }
   }
 }
