@@ -36,9 +36,9 @@ function installableOnEdit(event) {
 function autofill(event) {
   /** Autofill fields EMAIL and QUEUED. */
   Logger.log("autofill");
-  var email_col = getColumnByName(event.range, "email");
-  var queued_col = getColumnByName(event.range, "queued");
-  
+  var email_col = getColumnByName(event.range, EMAIL);
+  var queued_col = getColumnByName(event.range, QUEUED);
+
   var row = event.range.getRow();
   var numRows = event.range.getNumRows();
   
