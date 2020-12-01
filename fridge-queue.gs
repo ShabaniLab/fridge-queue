@@ -4,8 +4,11 @@ const EMAIL = "email"
 const QUEUED = "queued"
 const UNLOAD_SCHEDULED = "unload scheduled"
 
-function onEdit(event) {
-  /** Triggered when any cell or range is edited.
+function installableOnEdit(event) {
+  /** Installable trigger configured to fire when any cell or range is edited.
+   *
+   * This CANNOT be named onEdit(), or else it will fire twice: once as a simple trigger,
+   * and again as an installable trigger.
    *
    * This script should only autofill values once, when the sampleID is typed or pasted.
    * This is achieved by never overwriting values: once autofilled, always filled.
