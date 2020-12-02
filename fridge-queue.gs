@@ -20,7 +20,6 @@ function installableOnEdit(event) {
    */
   // do nothing on deletions and multi-column edits
   if (event.range.isBlank() || event.range.getNumColumns() != 1) {
-    Logger.log("abort");
     return;
   }
   
@@ -28,17 +27,14 @@ function installableOnEdit(event) {
     autofill(event);
   } else if (event.range.getColumn() == getColumnByName(event.range, UNLOAD_SCHEDULED)) {
     notify(event);
-  } else {
-    Logger.log("nothing to do");
   }
 }
 
 function autofill(event) {
   /** Autofill fields EMAIL and QUEUED. */
-  Logger.log("autofill");
   var email_col = getColumnByName(event.range, EMAIL);
   var queued_col = getColumnByName(event.range, QUEUED);
-
+  
   var row = event.range.getRow();
   var numRows = event.range.getNumRows();
   
@@ -54,7 +50,6 @@ function notify(event) {
    *
    * Increment until an email is found without a corresponding UNLOAD_SCHEDULED date.
    */
-  Logger.log("notify");
   var sampleIdCol = getColumnByName(event.range, SAMPLE_ID);
   var emailCol = getColumnByName(event.range, EMAIL);
   var unloadScheduledCol = getColumnByName(event.range, UNLOAD_SCHEDULED);
@@ -71,11 +66,9 @@ function notify(event) {
     var nextSample = sheet.getRange(row, sampleIdCol).getValue();
     var sheetName = sheet.getName();
     if (nextUser != "" && nextUnloadTime == "") {
-      Logger.log("sending email to row" + row);
       subject = `[fridge-queue/${sheetName}] ${currentUser.split("@")[0]} `
         + `is scheduled to unload ${Utilities.formatDate(new Date(unloadTime), 'America/New_York', 'M/d h:mma')}`;
       
-      Logger.log("subject = " + subject);
       var options = {
         noReply: true,
         htmlBody: "You're next in the queue."
@@ -101,15 +94,15 @@ function getColumnByName(range, colName) {
   /** Get the number of the column with "colName" in the first row.
    *
    * Note: columns are 1-indexed but javascript is 0-indexed.
+   *
+   * TODO Refactor: this queries the spreadsheet every time and is expensive.
    */
   return range.getSheet().getRange("1:1").getValues()[0].indexOf(colName) + 1;
 }
 
 function safelySetValue(range, newVal) {
-  /** Set values only if it will not overwrite anything. */
+  /** Set value only if it will not overwrite anything. */
   if (range.isBlank()) {
     range.setValue(newVal);
-  } else {
-    Logger.log("unsafe to set: not blank");
   }
 }
