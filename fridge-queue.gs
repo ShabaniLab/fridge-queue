@@ -78,7 +78,7 @@ function notify(event) {
         + `<blockquote><b>fridge:</b> ${sheetName}<br/>`
         + `<b>sample:</b> ${nextSample}<br/>`
         + `<b>scheduled:</b> ${unloadTime}</blockquote>`
-        + `Coordinate the exact time with ${currentUser}.`
+        + `Coordinate the exact time with ${currentUser}.  `
         + `See <a href="${sheet.getParent().getUrl()}">queue here</a>.<br/><br/>`
         + `This is an automated message.`,
       };
