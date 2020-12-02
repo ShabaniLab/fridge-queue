@@ -72,14 +72,21 @@ function notify(event) {
     var sheetName = sheet.getName();
     if (nextUser != "" && nextUnloadTime == "") {
       Logger.log("sending email to row" + row);
-      subject = `[fridge-queue/${sheetName}] ${currentUser} is scheduled to unload at ${unloadTime}`;
-      body = `You're next in the ${sheetName} queue to load ${nextSample}.\n`
-        + `Coordinate the exact time with ${currentUser}.\n\n`
-        + `${sheet.getParent().getUrl()}\n\n`
-        + `This is an automated message.`;
+      subject = `[fridge-queue/${sheetName}] ${currentUser.split("@")[0]} `
+        + `is scheduled to unload ${Utilities.formatDate(new Date(unloadTime), 'America/New_York', 'M/d h:mma')}`;
       
-      Logger.log("sending email to " + nextUser + "///" + subject + "///" + body);
-      MailApp.sendEmail(nextUser, subject, body, {noReply: true})
+      Logger.log("subject = " + subject);
+      var options = {
+        noReply: true,
+        htmlBody: "You're next in the queue."
+        + `<blockquote><b>fridge:</b> ${sheetName}<br/>`
+        + `<b>sample:</b> ${nextSample}<br/>`
+        + `<b>scheduled:</b> ${unloadTime}</blockquote>`
+        + `Coordinate the exact time with ${currentUser}.`
+        + `See <a href="${sheet.getParent().getUrl()}">queue here</a>.<br/><br/>`
+        + `This is an automated message.`,
+      };
+      MailApp.sendEmail(nextUser, subject, '', options)
       break;
     }
   }
