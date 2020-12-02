@@ -66,6 +66,9 @@ function notify(event) {
     var nextSample = sheet.getRange(row, sampleIdCol).getValue();
     var sheetName = sheet.getName();
     if (nextUser != "" && nextUnloadTime == "") {
+      if (nextUser == currentUser) {
+        return;
+      }
       subject = `[fridge-queue/${sheetName}] ${currentUser.split("@")[0]} `
         + `is scheduled to unload ${Utilities.formatDate(new Date(unloadTime), 'America/New_York', 'M/d h:mma')}`;
       
